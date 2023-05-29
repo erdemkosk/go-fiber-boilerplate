@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-fiber-boilerplate/pkg"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -11,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/helmet/v2"
@@ -27,14 +29,24 @@ func setupMiddlewares(app *fiber.App) {
 	app.Use(requestid.New())
 
 	if os.Getenv("ENABLE_LIMITER") != "" {
-		app.Use(limiter.New())
+		app.Use(limiter.New(limiter.Config{
+			Max:               20,
+			Expiration:        30 * time.Second,
+			LimiterMiddleware: limiter.SlidingWindow{},
+		}))
 	}
+
 	if os.Getenv("ENABLE_LOGGER") != "" {
 		app.Use(logger.New(logger.Config{
 			// For more options, see the Config section
 			Format: "[${ip}]:${port} ${locals:requestid} ${status} - ${method} ${path}​\n",
 		}))
 	}
+
+	if os.Getenv("ENABLE_MONITOR") != "" {
+		app.Get("/metrics", monitor.New())
+	}
+
 }
 
 func Create() *fiber.App {

@@ -1,6 +1,8 @@
 package example
 
 import (
+	"go-fiber-boilerplate/pkg"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,4 +17,13 @@ func GetExamples(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(examples)
+}
+
+func CreateExample(c *fiber.Ctx) error {
+	example := new(Example)
+	if err := c.BodyParser(example); err != nil {
+		return pkg.BadRequest("Invalid params")
+	}
+
+	return c.JSON(example)
 }
