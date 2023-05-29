@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/helmet/v2"
 )
 
@@ -23,11 +24,16 @@ func setupMiddlewares(app *fiber.App) {
 		Level: compress.LevelBestSpeed, // 1
 	}))
 	app.Use(etag.New())
+	app.Use(requestid.New())
+
 	if os.Getenv("ENABLE_LIMITER") != "" {
 		app.Use(limiter.New())
 	}
 	if os.Getenv("ENABLE_LOGGER") != "" {
-		app.Use(logger.New())
+		app.Use(logger.New(logger.Config{
+			// For more options, see the Config section
+			Format: "[${ip}]:${port} ${locals:requestid} ${status} - ${method} ${path}​\n",
+		}))
 	}
 }
 
