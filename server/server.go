@@ -16,6 +16,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/helmet/v2"
+	"github.com/gofiber/swagger"
+
+	_ "go-fiber-boilerplate/docs"
 )
 
 func setupMiddlewares(app *fiber.App) {
@@ -42,11 +45,6 @@ func setupMiddlewares(app *fiber.App) {
 			Format: "[${ip}]:${port} ${locals:requestid} ${status} - ${method} ${path}​\n",
 		}))
 	}
-
-	if os.Getenv("ENABLE_MONITOR") != "" {
-		app.Get("/metrics", monitor.New())
-	}
-
 }
 
 func Create() *fiber.App {
@@ -70,6 +68,12 @@ func Create() *fiber.App {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("OK")
 	})
+
+	if os.Getenv("ENABLE_MONITOR") != "" {
+		app.Get("/metrics", monitor.New())
+	}
+
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
 
 	return app
 }

@@ -1,0 +1,48 @@
+definitions:
+  example.Example:
+    properties:
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/examples:
+    get:
+      consumes:
+      - application/json
+      description: Get all examples
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/example.Example'
+            type: array
+      summary: Get a all examples
+      tags:
+      - examples
+    post:
+      consumes:
+      - application/json
+      description: Create a new example
+      parameters:
+      - description: Example
+        in: body
+        name: cridentinials
+        required: true
+        schema:
+          $ref: '#/definitions/example.Example'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example.Example'
+      summary: Create a new example
+      tags:
+      - examples
+swagger: "2.0"
