@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
+	"go-fiber-boilerplate/config"
 	"go-fiber-boilerplate/pkg"
-	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +21,8 @@ import (
 	_ "go-fiber-boilerplate/docs"
 )
 
+var cfg config.Config = config.LoadConfig()
+
 func setupMiddlewares(app *fiber.App) {
 	app.Use(helmet.New())
 	app.Use(recover.New())
@@ -31,7 +33,7 @@ func setupMiddlewares(app *fiber.App) {
 	app.Use(etag.New())
 	app.Use(requestid.New())
 
-	if os.Getenv("ENABLE_LIMITER") != "" {
+	if cfg.ENABLE_LIMITER == true {
 		app.Use(limiter.New(limiter.Config{
 			Max:               20,
 			Expiration:        30 * time.Second,
@@ -39,7 +41,7 @@ func setupMiddlewares(app *fiber.App) {
 		}))
 	}
 
-	if os.Getenv("ENABLE_LOGGER") != "" {
+	if cfg.ENABLE_LOGGER == true {
 		app.Use(logger.New(logger.Config{
 			// For more options, see the Config section
 			Format: "[${ip}]:${port} ${locals:requestid} ${status} - ${method} ${path}​\n",
@@ -49,6 +51,8 @@ func setupMiddlewares(app *fiber.App) {
 
 func Create() *fiber.App {
 	//database.SetupDatabase()
+
+	const idleTimeout = 5 * time.Second
 
 	app := fiber.New(fiber.Config{
 		// Override default error handler
@@ -61,6 +65,7 @@ func Create() *fiber.App {
 				return ctx.Status(500).JSON(pkg.Error{Status: 500, Code: "internal-server", Message: err.Error()})
 			}
 		},
+		IdleTimeout: idleTimeout,
 	})
 
 	setupMiddlewares(app)
@@ -69,7 +74,7 @@ func Create() *fiber.App {
 		return c.SendString("OK")
 	})
 
-	if os.Getenv("ENABLE_MONITOR") != "" {
+	if cfg.ENABLE_MONITOR == true {
 		app.Get("/metrics", monitor.New())
 	}
 
@@ -85,8 +90,5 @@ func Listen(app *fiber.App) error {
 		return c.SendStatus(404)
 	})
 
-	serverHost := os.Getenv("SERVER_HOST")
-	serverPort := os.Getenv("SERVER_PORT")
-
-	return app.Listen(fmt.Sprintf("%s:%s", serverHost, serverPort))
+	return app.Listen(fmt.Sprintf("%s:%s", cfg.SERVER_HOST, cfg.SERVER_PORT))
 }
