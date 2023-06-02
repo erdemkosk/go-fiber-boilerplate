@@ -7,7 +7,7 @@ definitions:
   pkg.Error:
     properties:
       code:
-        type: string
+        type: integer
       message:
         type: string
       status:

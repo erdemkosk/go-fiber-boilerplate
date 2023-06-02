@@ -114,7 +114,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
