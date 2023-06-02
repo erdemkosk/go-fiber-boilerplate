@@ -60,9 +60,9 @@ func Create() *fiber.App {
 			if e, ok := err.(*pkg.Error); ok {
 				return ctx.Status(e.Status).JSON(e)
 			} else if e, ok := err.(*fiber.Error); ok {
-				return ctx.Status(e.Code).JSON(pkg.Error{Status: e.Code, Code: "internal-server", Message: e.Message})
+				return ctx.Status(e.Code).JSON(pkg.Error{Status: e.Code, Code: -2, Message: e.Message})
 			} else {
-				return ctx.Status(500).JSON(pkg.Error{Status: 500, Code: "internal-server", Message: err.Error()})
+				return ctx.Status(500).JSON(pkg.Error{Status: 500, Code: -1, Message: err.Error()})
 			}
 		},
 		IdleTimeout: idleTimeout,

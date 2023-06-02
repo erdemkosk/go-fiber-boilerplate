@@ -2,7 +2,7 @@ package pkg
 
 type Error struct {
 	Status  int    `json:"status"`
-	Code    string `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
@@ -10,14 +10,26 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-func EntityNotFound(m string) *Error {
-	return &Error{Status: 404, Code: "entity-not-found", Message: m}
+const (
+	ErrExampleNotFound = 1001
+)
+
+var errorMessages = map[int]string{
+	ErrExampleNotFound: "Example not found",
 }
 
-func BadRequest(m string) *Error {
-	return &Error{Status: 400, Code: "bad-request", Message: m}
+func NewError(status, code int) *Error {
+	message, ok := errorMessages[code]
+	if !ok {
+		message = "Unknown error"
+	}
+	return &Error{
+		Status:  status,
+		Code:    code,
+		Message: message,
+	}
 }
 
-func Unexpected(m string) *Error {
-	return &Error{Status: 500, Code: "internal-server", Message: m}
+func ExampleNotFound() *Error {
+	return NewError(404, ErrExampleNotFound)
 }

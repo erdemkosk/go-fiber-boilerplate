@@ -5,6 +5,7 @@ import (
 )
 
 func Routes(route fiber.Router) {
+	route.Get("/error", GetError)
 	route.Get("/examples", GetExamples)
 	route.Post("/examples", CreateExample)
 }

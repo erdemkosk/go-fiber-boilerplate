@@ -11,6 +11,19 @@ type Example struct {
 }
 
 // Login is a function to get a book by ID
+// @Summary Get a example custom error
+// @Description Get a example custom error
+// @Tags examples
+// @Accept json
+// @Produce json
+// @Success 200 {array} pkg.Error
+// @Router /api/error [get]
+func GetError(c *fiber.Ctx) error {
+	err := pkg.ExampleNotFound()
+	return err
+}
+
+// Login is a function to get a book by ID
 // @Summary Get a all examples
 // @Description Get all examples
 // @Tags examples
@@ -39,7 +52,7 @@ func GetExamples(c *fiber.Ctx) error {
 func CreateExample(c *fiber.Ctx) error {
 	example := new(Example)
 	if err := c.BodyParser(example); err != nil {
-		return pkg.BadRequest("Invalid params")
+		return pkg.ExampleNotFound()
 	}
 
 	return c.JSON(example)
