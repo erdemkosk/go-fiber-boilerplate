@@ -36,3 +36,18 @@ swag init
 
 ```
 
+Make Alternative 
+It will auto generate swagger and run
+
+```bash
+make run
+
+```
+
+For testing
+
+```bash
+make test
+
+```
+
